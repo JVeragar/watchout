@@ -1,5 +1,26 @@
 /* your beautiful css styling goes here! */
 
-/* Note: an asteroid image is included in this repo. 
+/* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
 
+
+text {
+  font: bold 48px monospace;
+}
+
+.enter {
+  fill: green;
+}
+
+.update {
+  fill: #333;
+}
+
+.gameboard {
+  background-image:url('hipstercircle.gif');
+  background-size: 100%;
+  width:700px;
+  height:400px;
+  align:center;
+
+}
