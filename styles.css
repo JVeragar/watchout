@@ -2,25 +2,37 @@
 
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
-
-
-text {
-  font: bold 48px monospace;
+body {
+  overflow: hidden;
+  margin: 0;
+  text-align: center;
 }
 
-.enter {
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 5px;
+}
+
+.player {
   fill: green;
+  stroke: blue;
+  stroke-width: 1.5;
 }
 
-.update {
-  fill: #333;
-}
-
-.gameboard {
-  background-image:url('hipstercircle.gif');
-  background-size: 100%;
-  width:700px;
-  height:400px;
-  align:center;
-
+.infected {
+  fill: red;
+  stroke: orange;
+  stroke-width: 1.5;
 }
