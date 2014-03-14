@@ -91,7 +91,7 @@ var jsonThing = {
           "children": [
               {"name": "EricCraft"},
               {"name": "AlbertLee"},
-              {"name": "ChrisOliver"}
+              {"name": "BarksMcKinzey"}
 
             ]
           },
@@ -263,7 +263,6 @@ window.getLinks = function(nodeName){
   var getLink = function(node){
     var nextNodeName;
     d3.selectAll("path").each(function(obj){
-      window.obj = obj;
       if (obj.target.name === nodeName) {
         result.push([obj, this]);
         nextNodeName = obj.source.name;
