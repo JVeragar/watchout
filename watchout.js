@@ -1,40 +1,3 @@
-/*
-window.wo={};
-
-wo.options = {
-  height: window.innerHeight,
-  width: window.innerWidth
-};
-
-wo.gameBoard = d3.select('body').append('svg:svg').attr('width', wo.options.width).attr('height', wo.options.height);
-
-wo.handleResize = function(){
-  window.onresize = function(){
-    wo.options.height = window.innerHeight;
-    wo.options.width = window.innerWidth;
-    wo.gameBoard.attr("width", window.innerHeight);
-    wo.gameBoard.attr("width", window.innerWidth);
-
-  };
-};
-
-wo.createLevel = function(){
-  wo.gameBoard.append('circle')
-  .attr('cx', '50%').attr('cy', '50%').attr('r', '5%')
-  .attr('stroke', 'black').attr('stroke-width', '0.5%')
-  .attr('fill', 'green');
-};
-
-// Run Section
-wo.handleResize();
-wo.createLevel();
-*/
-
-
-// copy paste below
-
-
-
 var diameter = 960;
 
 var tree = d3.layout.tree()
@@ -168,32 +131,45 @@ var jsonThing = {
         },
       ]
     };
-var makePlayer = function(target){
 
-  var player = target.append("circle").attr("r", "8").attr("class", "player");
-  player.occupies = target;
-  return player;
 
-};
 
-var movePlayerToNode = function(player, target){
-  player.attr("transform", "translate(" + target.y + ")");
-};
+// var movePlayerToNode = function(player, target){
+//   console.log('moveplayerToNode');
+//   player.attr("transform", "translate(" + target.y + ")");
+// };
 
 var tryMove = function(player, target){
-  //console.log(target)
-  //console.log('target x', target.x);
-  //console.log('target y',target.y);
+  // console.log('tryMove')
+  // console.log(target)
+  // console.log('target x', target.x);
+  // console.log('target y',target.y);
+  // console.log('target children', target.children)
+  // console.log('target parent', target.parent)
   player.transition().duration(1000).attr("transform", function(d){
     return "rotate(" + (target.x) +") translate(" + target.y + ")";
   });
-
+  getCourse(target);
   return player;
+
+
 };
 
-var mouseClickToMove = function(){
+var getCourse = function(target){
+  if(target===destination){console.log('we out here')}
+  if (target.parent===undefined){
+    console.log('we have arrived at the marcus');
+  } else if (target.children===undefined){
+    console.log('we have arrived at the leaf');
+    getCourse(target.parent);
+  }
 
-}
+  if(target.parent&&target.children){
+    console.log('helpdesk or floor', target);
+  }
+
+};
+
 
 
 // Start schim code
@@ -213,7 +189,8 @@ var link = svg.selectAll(".link")
   .enter().append("path")
     .attr("class", "link")
     .attr("d", diagonal);
-window.player;
+
+var destination;
 
 var node = svg.selectAll(".node")
   .data(nodes)
@@ -224,12 +201,34 @@ var node = svg.selectAll(".node")
       //console.log('obj ', obj, 'index ', index, 'dom element ',this);
       //console.log(obj.y);
      tryMove(window.player, obj);
+     destination=obj;
+
 
     });
 
 // create player
+var makePlayer = function(target){
+
+  var player = target.append("circle").attr("r", "10").attr("class", "player");
+  player.occupies = target;
+  return player;
+
+};
+
+var makeHelper = function(target){
+
+  var helper = target.append("circle").attr("r", "8").attr("class", "helper");
+  helper.occupies = target;
+  return helper;
+
+};
+
+window.player;
 var g = d3.select("g");
 window.player = makePlayer(g);
+
+window.helper;
+//window.helper = makeHelper(g);
 
 
 node.append("circle")
@@ -289,6 +288,54 @@ window.getLink = function(nodeName){
   return result;
 };
 
+window.sourceCourse =function(source){
+  var course = {};
+  course['0x'] = source.parent.x;
+  course['0y'] =source.parent.y;
+  course['1x'] = source.parent.parent.x;
+  course['1y'] = source.parent.parent.y;
+  course['2x'] = source.parent.parent.parent.x;
+  course['2y'] = source.parent.parent.parent.y;
+  console.log(course);
+  return course;
+};
+
+var moveHater = function(hater, course){
+  // console.log('tryMove')
+  // console.log(target)
+  // console.log('target x', target.x);
+  // console.log('target y',target.y);
+  // console.log('target children', target.children)
+  // console.log('target parent', target.parent)
+  //console.log('moving here ', course[0x], 'and here 'course[0y]);
+
+  hater.transition().duration(1000).attr("transform", function(d){
+    return "rotate(" + (course['0x']) +") translate(" + course['0y'] + ")";
+  });
+
+   debugger;
+
+
+  hater.transition().duration(1000).attr("transform", function(d){
+    return "rotate(" + (course['1x']) +") translate(" + course['1y'] + ")";
+  });
+  hater.transition().duration(1000).attr("transform", function(d){
+    return "rotate(" + (course['2x']) +") translate(" + course['2y'] + ")";
+  });
+  //getCourse(target);
+  return hater;
+
+
+};
+
+var makeHater = function(target){
+
+  var hater = target.append("circle").attr("r", "8").attr("class", "hater");
+  hater.occupies = target;
+  return hater;
+
+};
+
 window.submitRequest = function(source){
   if (window.activeRequests[source.name]===undefined){
     window.activeRequests[source.name] = {
@@ -303,6 +350,10 @@ window.submitRequest = function(source){
     //console.log(d3source);
     d3source.classed("circle", false);
     d3source.classed("infected", true);
+    var course = sourceCourse(source);
+    var hater = makeHater(d3source);
+    console.log('hater player ', hater)
+    moveHater(player,course);
   }
 };
 
