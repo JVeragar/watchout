@@ -1,0 +1,117 @@
+{
+  "name": "Marcus",
+  "children": [
+    {
+      "name": "floor 1",
+      "children": [
+        {
+          "name": "floor 1 help 1",
+          "children": [
+            {"name": "WeiMao", "size": 3938},
+            {"name": "TristanYu", "size": 3812},
+            {"name": "SeanSun", "size": 743}
+          ]
+        },
+        {
+          "name": "floor 1 help 2",
+          "children": [
+            {"name": "RobertHolmes", "size": 3534},
+            {"name": "PhillipAlexander", "size": 5731},
+            {"name": "KatieHempenius", "size": 5914}
+          ]
+        },
+        {
+          "name": "floor 1 help 3",
+          "children": [
+            {"name": "JoshuaGoldberg"},
+            {"name": "JonathanTewksbury"},
+            {"name": "FaridSiddiqi"}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "floor 2",
+      "children": [
+        {
+          "name": "floor 2 help 1",
+          "children": [
+              {"name": "EricCraft"},
+              {"name": "AlbertLee"},
+              {"name": "BarksMcKinzey"}
+
+            ]
+          },
+          {"name": "floor 2 help 2",
+          "children": [
+              {"name": "MarkChatkha"},
+              {"name": "JPWhitaker"},
+              {"name": "AdnanWahab"}
+
+            ]
+          },
+
+            {"name": "floor 2 help 3",
+          "children": [
+              {"name": "ChristenThompson"},
+              {"name": "EmilyCoco"},
+              {"name": "ChrisOliver"}
+
+            ]
+          },
+          ]
+        },
+        {
+          "name": "floor 3",
+          "children": [
+            {
+              "name": "floor 3 help 1",
+              "children": [
+                {"name": "CharlesTai"},
+                {"name": "AlexJacobs"},
+                {"name": "AddisonLee"}
+              ]
+            },
+            {"name": "floor 3 help 2",
+          "children": [
+              {"name": "AdrianKim"},
+              {"name": "ElliottThoreby"},
+              {"name": "MeganTulac"}
+
+            ]
+           },
+            {"name": "floor 3 help 3",
+          "children": [
+              {"name": "HenryZhu"},
+              {"name": "MariusFarioletti"},
+              {"name": "ShaneKeller"}
+            ]
+        },
+          ]
+        },
+        {
+          "name": "floor 4",
+          "children": [
+            {"name": "floor 4 help 1",
+            "children": [
+              {"name": "NathanHoule"},
+              {"name": "SherahSmith"},
+              {"name": "IanLyons"}
+            ]},
+            {"name": "floor 4 help 2",
+            "children": [
+              {"name": "TimSchiller"},
+              {"name": "MarkReveley"},
+              {"name": "JunJung"}
+            ]},
+            {"name": "floor 4 help 3",
+            "children": [
+              {"name": "MarkRossetti"},
+              {"name": "IanLyons"},
+              {"name": "HenryZhu"}
+
+            ]}
+          ]
+        },
+      ]
+    };
