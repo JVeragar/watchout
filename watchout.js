@@ -144,14 +144,19 @@ var tryMove = function(player, target){
   // console.log('target y',target.y);
   // console.log('target children', target.children)
   // console.log('target parent', target.parent)
-  player.transition().duration(1000).attr("transform", function(d){
-    return "rotate(" + (target.x) +") translate(" + target.y + ")";
-  });
-  courseSubFunction(player.occupies, target);
+  // player.transition().duration(1000).attr("transform", function(d){
+  //   return "rotate(" + (target.x) +") translate(" + target.y + ")";
+  // });
+  var course = courseSubFunction(player.occupies, target);
   player.occupies = target;
+  var playString='player'
+  for (var i=0; i<course.length; i++){
+    playString = playString +'.transition().duration(1000).attr("transform", function(d){ return "rotate(" + '+course[i][0]+' +") translate(" + '+course[i][1]+' + ")"})';
+  }
+  playString = playString+';';
+  eval(playString);
+
   return player;
-
-
 };
 
 
