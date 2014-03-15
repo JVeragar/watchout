@@ -134,12 +134,10 @@ var jsonThing = {
 
 
 
-// var movePlayerToNode = function(player, target){
-//   console.log('moveplayerToNode');
-//   player.attr("transform", "translate(" + target.y + ")");
-// };
+
 
 var tryMove = function(player, target){
+  console.log(target);
   // console.log('tryMove')
   // console.log(target)
   // console.log('target x', target.x);
@@ -149,30 +147,71 @@ var tryMove = function(player, target){
   player.transition().duration(1000).attr("transform", function(d){
     return "rotate(" + (target.x) +") translate(" + target.y + ")";
   });
-  getCourse(target);
+  courseSubFunction(player.occupies, target);
+  player.occupies = target;
   return player;
 
 
 };
 
-var getCourse = function(target){
-  if(target===destination){console.log('we out here')}
-  if (target.parent===undefined){
-    console.log('we have arrived at the marcus');
-  } else if (target.children===undefined){
-    console.log('we have arrived at the leaf');
-    getCourse(target.parent);
+
+window.courseSubFunction = function(curNode, tarNode){
+  //move to the parent till the root
+  //move out the tree to the leaf
+  //are we on the same desk?
+  var course = [];
+  if (curNode.depth===tarNode.depth
+  && curNode.parent === tarNode.parent){
+    //just go there via curNode.parent
+    course.push([curNode.parent.x,curNode.parent.y]);
+    course.push([tarNode.x,tarNode.y]);
+    return course;
+  //are we on the same floor?
+  } else if (curNode.depth===tarNode.depth
+  && curNode.parent.parent === tarNode.parent.parent){
+    //go to curNode.parent, curNode.parent.parent, tarNode.parent, tarNode
+    course.push([curNode.parent.x,curNode.parent.y]);
+    course.push([curNode.parent.parent.x,curNode.parent.parent.y]);
+    course.push([tarNode.parent.x,tarNode.parent.y]);
+    course.push([tarNode.x,tarNode.y]);
+    return course;
+  }
+  //we have to cross the root to get there!
+  //what's the curNode.depth?, whats the tarNode.depth?
+  //get me to the root, then to the target
+  //
+  if (curNode.depth=== 1){
+    //only one up to the root
+    course.push([curNode.parent.x,curNode.parent.y]);
+  } else if (curNode.depth === 2){
+    //two up to root
+    course.push([curNode.parent.x,curNode.parent.y]);
+    course.push([curNode.parent.parent.x,curNode.parent.parent.y]);
+  } else if (curNode.depth === 3){
+    //leaf me alone
+    course.push([curNode.parent.x,curNode.parent.y]);
+    course.push([curNode.parent.parent.x,curNode.parent.parent.y]);
+    course.push([curNode.parent.parent.parent.x,curNode.parent.parent.parent.y]);
   }
 
-  if(target.parent&&target.children){
-    console.log('helpdesk or floor', target);
+  //now to the leaf
+  if (tarNode.depth === 1){
+    //only to the floor
+    course.push([tarNode.x,tarNode.y]);
+  } else if (tarNode.depth === 2){
+    //only to the desk
+    course.push([tarNode.parent.x,tarNode.parent.y]);
+    course.push([tarNode.x,tarNode.y]);
+  } else if (tarNode.depth === 3){
+    //root to leaf traversal
+    course.push([tarNode.parent.parent.x,tarNode.parent.parent.y]);
+    course.push([tarNode.parent.x,tarNode.parent.y]);
+    course.push([tarNode.x,tarNode.y]);
   }
-
+  console.log('yo here it is ', course);
+  return course;
 };
-
-
-
-// Start schim code
+/////////////////////////////////////////////////
 
 var nodes = tree.nodes(jsonThing),
     links = tree.links(nodes);
@@ -288,39 +327,29 @@ window.getLink = function(nodeName){
   return result;
 };
 
-window.sourceCourse =function(source){
+window.sourceCourse = function(source){
   var course = {};
-  course['0x'] = source.parent.x;
-  course['0y'] =source.parent.y;
-  course['1x'] = source.parent.parent.x;
-  course['1y'] = source.parent.parent.y;
-  course['2x'] = source.parent.parent.parent.x;
-  course['2y'] = source.parent.parent.parent.y;
+  course['ax'] = source.parent.x;
+  course['ay'] = source.parent.y;
+  course['bx'] = source.parent.parent.x;
+  course['by'] = source.parent.parent.y;
+  course['cx'] = source.parent.parent.parent.x;
+  course['cy'] = source.parent.parent.parent.y;
   console.log(course);
   return course;
 };
 
+
 var moveHater = function(hater, course){
-  // console.log('tryMove')
-  // console.log(target)
-  // console.log('target x', target.x);
-  // console.log('target y',target.y);
-  // console.log('target children', target.children)
-  // console.log('target parent', target.parent)
-  //console.log('moving here ', course[0x], 'and here 'course[0y]);
 
   hater.transition().duration(1000).attr("transform", function(d){
-    return "rotate(" + (course['0x']) +") translate(" + course['0y'] + ")";
-  });
-
-   debugger;
-
-
-  hater.transition().duration(1000).attr("transform", function(d){
-    return "rotate(" + (course['1x']) +") translate(" + course['1y'] + ")";
-  });
-  hater.transition().duration(1000).attr("transform", function(d){
-    return "rotate(" + (course['2x']) +") translate(" + course['2y'] + ")";
+    return "rotate(" + (course.ax) +") translate(" + course.ay + ")";
+  })
+  .transition().duration(1000).attr("transform", function(d){
+    return "rotate(" + (course.bx) +") translate(" + course.by + ")";
+  })
+  .transition().duration(1000).attr("transform", function(d){
+    return "rotate(" + (course.cx) +") translate(" + course.cy + ")";
   });
   //getCourse(target);
   return hater;
@@ -353,7 +382,7 @@ window.submitRequest = function(source){
     var course = sourceCourse(source);
     var hater = makeHater(d3source);
     console.log('hater player ', hater)
-    moveHater(player,course);
+    moveHater(hater,course);
   }
 };
 
