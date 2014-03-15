@@ -411,3 +411,33 @@ function shuffle(array) {
   }
   return array;
 }
+////////////////////////////colission detection
+
+var prevCollision = false;
+var detectCollisions = function(){
+  var collision = false;
+  astroids.each(function(){
+    var astroid = d3.select(this);
+    var cx = parseFloat(astroid.style('left')) + r;
+    var cy = parseFloat(astroid.style('top')) + r;
+    // the magic of collision detection
+    var x = cx - mouse.x;
+    var y = cy - mouse.y;
+    if( Math.sqrt(x * x + y * y) < r ){
+      gameOver();
+      collision = true;
+    }
+  })
+  if(collision) {
+    vis.style('background-color', 'red');
+    if(prevCollision !== collision){
+      collisionCount = collisionCount + 1;
+      d3.select('.scoreboard .collisions span').text(collisionCount);
+    }
+  }else{
+    vis.style('background-color', 'black');
+  }
+  prevCollision = collision;
+};
+
+d3.timer(detectCollisions);

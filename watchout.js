@@ -1,20 +1,20 @@
 var diameter = 960;
 
 var tree = d3.layout.tree()
-    .size([360, diameter / 2 - 240])
-    .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+  .size([360, diameter / 2 - 240])
+  .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
 
 var diagonal = d3.svg.diagonal.radial()
-    .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
+  .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
 
 var svg = d3.select("body").append("svg")
-    .attr("width", diameter - 350)
-    .attr("height", diameter - 150)
+  .attr("width", diameter - 350)
+  .attr("height", diameter - 150)
   .append("g")
-    .attr("transform", "translate(" + diameter / 3 + "," + diameter / 3 + ")");
+  .attr("transform", "translate(" + diameter / 3 + "," + diameter / 3 + ")");
 
-//var jsonThing = d3.json("floorplan.json");
-var jsonThing = {
+//var floorPlan = d3.json("floorplan.json");
+var floorPlan = {
   "name": "Marcus",
   "children": [
     {
@@ -134,10 +134,119 @@ var jsonThing = {
 
 
 
+// * tree maker functions * //
+
+var nodes = tree.nodes(floorPlan),
+    links = tree.links(nodes);
+window.testTree = tree;
+window.testNodes = nodes;
+window.testLinks = links;
+
+for (var i = 0; i < nodes.length; i++) {
+  nodes[i].x = nodes[i].x + 135;
+}
+
+var link = svg.selectAll(".link")
+    .data(links)
+  .enter().append("path")
+    .attr("class", "link")
+    .attr("d", diagonal);
+
+var destination;
+
+var node = svg.selectAll(".node")
+  .data(nodes)
+  .enter().append("g")
+  .attr("class", "node")
+  .attr("transform", function(d) { return "rotate(" + (d.x) + ")translate(" + d.y + ")"; })
+  .on("click", function (obj,index){
+    //console.log('obj ', obj, 'index ', index, 'dom element ',this);
+    //console.log(obj.y);
+   movePlayer(window.player, obj);
+   destination=obj;
+});
+
+node.append("circle")
+    .attr("r", 10);
+
+node.append("text")
+    .attr("dy", ".31em")
+    .attr("text-anchor", function(d) { return "start"; })
+    .attr("transform", function(d) { return  "rotate(45)translate(11)"; })
+    .text(function(d) { return d.name; });
+
+d3.select().style("height", diameter - 150 + "px");
 
 
-var tryMove = function(player, target){
-  console.log(target);
+var nonContact = false;
+var checkContact = function(){
+  var helpReqs = d3.selectAll(".hater");
+  var contact = false;
+  var nonContact = false;
+  helpReqs.each(function(){
+    var hlpRq = d3.transform(d3.select(this).attr("transform"));
+    var plyr = d3.transform(d3.select(".player").attr("transform"));
+    var x = hlpRq.translate[0] - plyr.translate[0];
+    var y = hlpRq.translate[1] - plyr.translate[1];
+    //console.log(x,y)
+    if( Math.sqrt(x * x + y * y) < 10 ){
+      contact = true;
+      console.log('we gotta hit yo!!!!!!!!!!!!')
+    }
+    if(contact) {
+      //debugger;
+      d3.select(this).remove();
+    }else{
+////////////////////////
+    }
+  });
+  nonContact = contact;
+};
+d3.timer(checkContact);
+
+ //* create player *//
+
+var makePlayer = function(target){
+
+  var player = target
+    .append("circle")
+    .attr("r", "10")
+    .attr("class", "player");
+  player.occupies = target;
+  return player;
+
+};
+
+window.player;
+var g = d3.select("g");
+window.player = makePlayer(g);
+
+// var makeHelper = function(target){
+
+//   var helper = target
+//     .append("circle")
+//     .attr("r", "8")
+//     .attr("class", "helper");
+//   helper.occupies = target;
+//   return helper;
+
+// };
+
+// window.helper;
+//window.helper = makeHelper(g);
+// window.getLink = function(nodeName){
+//   var result;
+//   d3.selectAll("path").each(function(obj){
+//     window.obj = obj;
+//     if (obj.target.name === nodeName) {
+//       result = [obj, this];
+//     }
+//   });
+//   return result;
+// };
+
+var movePlayer = function(player, target){
+  //console.log(target);
   var course = playerCourseMaker(player.occupies, target);
   player.occupies = target;
   var playString='player'
@@ -204,81 +313,11 @@ window.playerCourseMaker = function(curNode, tarNode){
     course.push([tarNode.parent.x,tarNode.parent.y]);
     course.push([tarNode.x,tarNode.y]);
   }
-  console.log('yo here it is ', course);
+  // console.log('yo here it is ', course);
   return course;
 };
-///////*tree maker functions*///////
 
-var nodes = tree.nodes(jsonThing),
-    links = tree.links(nodes);
-    window.testTree = tree;
-    window.testNodes = nodes;
-    window.testLinks = links;
-
-for (var i = 0; i < nodes.length; i++) {
-  nodes[i].x = nodes[i].x + 135;
-}
-
-var link = svg.selectAll(".link")
-    .data(links)
-  .enter().append("path")
-    .attr("class", "link")
-    .attr("d", diagonal);
-
-var destination;
-
-var node = svg.selectAll(".node")
-  .data(nodes)
-  .enter().append("g")
-    .attr("class", "node")
-    .attr("transform", function(d) { return "rotate(" + (d.x) + ")translate(" + d.y + ")"; })
-    .on("click", function (obj,index){
-      //console.log('obj ', obj, 'index ', index, 'dom element ',this);
-      //console.log(obj.y);
-     tryMove(window.player, obj);
-     destination=obj;
-
-
-    });
-
-// create player
-var makePlayer = function(target){
-
-  var player = target.append("circle").attr("r", "10").attr("class", "player");
-  player.occupies = target;
-  return player;
-
-};
-
-var makeHelper = function(target){
-
-  var helper = target.append("circle").attr("r", "8").attr("class", "helper");
-  helper.occupies = target;
-  return helper;
-
-};
-
-window.player;
-var g = d3.select("g");
-window.player = makePlayer(g);
-
-window.helper;
-//window.helper = makeHelper(g);
-
-
-node.append("circle")
-    .attr("r", 10);
-
-node.append("text")
-    .attr("dy", ".31em")
-    .attr("text-anchor", function(d) { return "start"; })
-    .attr("transform", function(d) { return  "rotate(45)translate(11)"; })
-    .text(function(d) { return d.name; });
-
-d3.select().style("height", diameter - 150 + "px");
-
-
-// *make enemies*//
+// * make enemies * //
 
 window.activeRequests = {};
 window.students = (function(){
@@ -312,71 +351,58 @@ window.getLinks = function(nodeName){
   return result;
 };
 
-window.getLink = function(nodeName){
-  var result;
-  d3.selectAll("path").each(function(obj){
-    window.obj = obj;
-    if (obj.target.name === nodeName) {
-      result = [obj, this];
-    }
-  });
-  return result;
-};
 
 window.sourceCourse = function(source){
   var course = {};
   course['sx'] = source.x;
-  course['sy'] = source.y;  
+  course['sy'] = source.y;
   course['px'] = source.parent.x;
   course['py'] = source.parent.y;
   //ppx is the parent of the parent x
   course['ppx'] = source.parent.parent.x;
   course['ppy'] = source.parent.parent.y;
-  /// route to root
+  /// route to root, the root is great-grand-parent
   course['pppx'] = source.parent.parent.parent.x;
   course['pppy'] = source.parent.parent.parent.y;
-  console.log('hater course', course);
+  console.log('helpReq course', course);
   return course;
 };
 
-
-var moveHater = function(hater, course){
-
-  hater
-  .attr("transform", function(d){
-    return "rotate(" + (course.sx) +") translate(" + course.sy + ")";
-  })
-  .transition()
-  .duration(1000)
-  .attr("transform", function(d){
-    return "rotate(" + (course.px) +") translate(" + course.py + ")";
-  })
-  .transition()
-  .duration(1000)
-  .attr("transform", function(d){
-    return "rotate(" + (course.ppx) +") translate(" + course.ppy + ")";
-  })
-  .transition()
-  .duration(1000)
-  .attr("transform", function(d){
-    return "rotate(" + (course.pppx) +") translate(" + course.pppy + ")";
-  });
+var moveHelpReq = function(helpReq, course){
+  helpReq
+    .attr("transform", function(d){
+      return "rotate(" + (course.sx) +") translate(" + course.sy + ")";
+    })
+    .transition()
+    .duration(1000)
+    .attr("transform", function(d){
+      return "rotate(" + (course.px) +") translate(" + course.py + ")";
+    })
+    .transition()
+    .duration(1000)
+    .attr("transform", function(d){
+      return "rotate(" + (course.ppx) +") translate(" + course.ppy + ")";
+    })
+    .transition()
+    .duration(1000)
+    .attr("transform", function(d){
+      return "rotate(" + (course.pppx) +") translate(" + course.pppy + ")";
+    });
   //getCourse(target);
-  return hater;
-
+  return helpReq;
 
 };
 
-var makeHater = function(target){
 
-  var hater = g//target
+var makeHelpReq = function(target){
+
+  var helpReq = g//target
   .append("circle")
   .attr("r", "8")
   .attr("class", "hater");
 
-  hater.occupies = target;
-  return hater;
-
+  helpReq.occupies = target;
+  return helpReq;
 };
 
 window.submitRequest = function(source){
@@ -394,11 +420,11 @@ window.submitRequest = function(source){
     d3source.classed("circle", false);
     d3source.classed("infected", true);
     var course = sourceCourse(source);
-    var hater = makeHater(d3source);
+    var helpReq = makeHelpReq(d3source);
 
-    console.log('hater player ', hater)
+    console.log('helpReq player ', helpReq)
 
-    moveHater(hater,course);
+    moveHelpReq(helpReq,course);
   }
 };
 
